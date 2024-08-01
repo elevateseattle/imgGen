@@ -1,30 +1,38 @@
-<canvas id="myCanvas" width="250" height="100" style="border:1px solid #d3d3d3;">
-</canvas>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello World Canvas</title>
+</head>
+<body>
+    <canvas id="myCanvas" width="250" height="100" style="border:1px solid #d3d3d3;">
+    </canvas>
+    <div id="container">
+    </div>
 
-<div id="container">
-</div>
-
-<script>
-function drawHelloWorld(canvas) {
-    const ctx = canvas.getContext("2d");
+    <script>
+    function drawHelloWorld(canvas) {
+        const ctx = canvas.getContext("2d");
+        
+        // Draw the background
+        ctx.rect(0, 0, 250, 100);
+        ctx.fillStyle = "green";
+        ctx.fill();
     
-    // Draw the background
-    ctx.rect(0, 0, 250, 100);
-    ctx.fillStyle = "green";
-    ctx.fill();
- 
-    // Draw the text
-    ctx.font = "30px Helvetica";
-    ctx.fillStyle = "ghostwhite";
-    ctx.fillText("Hello World", 50, 60);
-}
+        // Draw the text
+        ctx.font = "30px Helvetica";
+        ctx.fillStyle = "ghostwhite";
+        ctx.fillText("Hello World", 50, 60);
+    }
 
-document.addEventListener('DOMContentLoaded', (event) => {
-    const canvas = document.getElementById('myCanvas');
-    drawHelloWorld(canvas);
-
-    const imgElement = document.createElement('img');
-    imgElement.src = canvas.toDataURL('image/jpeg');
-    document.getElementById('container').appendChild(imgElement);
-});
-</script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        const canvas = document.getElementById('myCanvas');
+        drawHelloWorld(canvas);
+        const imgElement = document.createElement('img');
+        imgElement.src = canvas.toDataURL('image/jpeg');
+        document.getElementById('container').appendChild(imgElement);
+    });
+    </script>
+</body>
+</html>a
