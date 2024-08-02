@@ -22,12 +22,21 @@ jobs:
         npm install random-words
         node -e "
           const randomWords = require('random-words');
-          const adjectives = randomWords({ exactly: 1, wordsPerString: 1, separator: ' ', formatter: (word, index) => {
+          const adjectives = randomWords({ exactly: 1, wordsPerString: 1, formatter: (word, index) => {
             return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
           }});
-          const nouns = randomWords({ exactly: 1, wordsPerString: 1, separator: ' ', formatter: (word, index) => {
+          const nouns = randomWords({ exactly: 1, wordsPerString: 1, formatter: (word, index) => {
             return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
           }});
-          console.log('Random Adjective:', adjectives[0]);
-          console.log('Random Noun:', nouns[0]);
+          const text = adjectives[0] + ' ' + nouns[0];
+          const fs = require('fs');
+          fs.writeFileSync('random_words.txt', text);
         "
+
+    - name: Commit Random Words
+      run: |
+        git config --global user.email "action@github.com"
+        git config --global user.name "GitHub Action"
+        git add random_words.txt
+        git commit -m "Generated random words"
+        git push origin main
