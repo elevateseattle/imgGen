@@ -3,36 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello World Canvas</title>
+    <title>Text to Image</title>
 </head>
 <body>
-    <canvas id="myCanvas" width="250" height="100" style="border:1px solid #d3d3d3;">
-    </canvas>
-    <div id="container">
-    </div>
-
-    <script>
-    function drawHelloWorld(canvas) {
-        const ctx = canvas.getContext("2d");
-        
-        // Draw the background
-        ctx.rect(0, 0, 250, 100);
-        ctx.fillStyle = "green";
-        ctx.fill();
+    <canvas id="myCanvas" width="250" height="100" style="border:1px solid #d3d3d3;"></canvas>
+    <div id="container"></div>
     
-        // Draw the text
-        ctx.font = "30px Helvetica";
-        ctx.fillStyle = "ghostwhite";
-        ctx.fillText("Hello World", 50, 60);
-    }
+    <script>
+        function drawText(canvas, text) {
+            const ctx = canvas.getContext("2d");
+            ctx.rect(0, 0, 250, 100);
+            ctx.fillStyle = "green";
+            ctx.fill();
+            ctx.font = "30px Helvetica";
+            ctx.fillStyle = "ghostwhite";
+            ctx.fillText(text, 50, 60);
+        }
 
-    document.addEventListener('DOMContentLoaded', (event) => {
-        const canvas = document.getElementById('myCanvas');
-        drawHelloWorld(canvas);
-        const imgElement = document.createElement('img');
-        imgElement.src = canvas.toDataURL('image/jpeg');
-        document.getElementById('container').appendChild(imgElement);
-    });
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const canvas = document.getElementById('myCanvas');
+            const urlParams = new URLSearchParams(window.location.search);
+            const text = urlParams.get('text') || 'Hello World';
+            drawText(canvas, text);
+
+            const imgElement = document.createElement('img');
+            imgElement.src = canvas.toDataURL('image/jpeg');
+            document.getElementById('container').appendChild(imgElement);
+        });
     </script>
 </body>
-</html>a
+</html>
