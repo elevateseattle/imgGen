@@ -16,14 +16,16 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3  # Use the latest version
 
     - name: Install Node.js
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v3  # Use the latest version
       with:
-        node-version: '14'
+        node-version: '20'  # Use Node.js 20
 
     - name: Generate Image
+      env:
+        INPUT_TEXT: ${{ github.event.inputs.text }}  # Set the text input as an environment variable
       run: |
         npm install canvas
         node -e "
