@@ -43,7 +43,7 @@ jobs:
           ctx.rect(0, 0, 250, 100);
           ctx.fillStyle = color;
           ctx.fill();
-          ctx.font = '30px Helvetica';
+          ctx.font = '11px Helvetica';
           ctx.fillStyle = 'ghostwhite';
           ctx.fillText(text, 50, 60);
           const buffer = canvas.toBuffer('image/jpeg');
