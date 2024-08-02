@@ -18,8 +18,11 @@ jobs:
 
     - name: Generate Random Words
       run: |
+        echo "Initializing npm project..."
         npm init -y
+        echo "Installing random-words package..."
         npm install random-words
+        echo "Generating random words..."
         node -e "
           const randomWords = require('random-words');
           const adjectives = randomWords({ exactly: 1, wordsPerString: 1, formatter: (word, index) => {
@@ -31,6 +34,7 @@ jobs:
           const text = adjectives[0] + ' ' + nouns[0];
           const fs = require('fs');
           fs.writeFileSync('random_words.txt', text);
+          console.log('Generated words:', text);
         "
 
     - name: Commit Random Words
