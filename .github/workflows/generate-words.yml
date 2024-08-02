@@ -7,6 +7,9 @@ jobs:
   generate-words:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write  # Ensure the token has write permissions
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
@@ -34,32 +37,15 @@ jobs:
     - name: Generate Random Words
       run: |
         echo "Generating random words..."
-        node -e "
-          (async () => {
-            const randomWords = (await import('random-words')).default;
-            const adjectives = randomWords({ exactly: 1, wordsPerString: 1, formatter: (word, index) => {
-              return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-            }});
-            const nouns = randomWords({ exactly: 1, wordsPerString: 1, formatter: (word, index) => {
-              return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-            }});
-            const text = adjectives[0] + ' ' + nouns[0];
-            const fs = require('fs');
-            try {
-              fs.writeFileSync('random_words.txt', text);
-              console.log('Generated words:', text);
-            } catch (err) {
-              console.error('Failed to write file:', err);
-              process.exit(1);
-            }
-          })();
-        "
+        node generate-words.js
         if [ $? -ne 0 ]; then
           echo "Node script failed"
           exit 1
         fi
 
     - name: Commit Random Words
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         echo "Committing generated words to the repository..."
         git config --global user.email "action@github.com"
