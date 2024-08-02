@@ -29,6 +29,7 @@ jobs:
         INPUT_BGCOLOR: ${{ github.event.inputs.bgcolor }}
         INPUT_FONTCOLOR: ${{ github.event.inputs.fontcolor }}
       run: |
+        npm init -y
         npm install canvas
         node -e "
           const { createCanvas, loadImage } = require('canvas');
@@ -50,23 +51,27 @@ jobs:
             ctx.fillRect(0, 0, 250, 100);
             
             // Load and draw logos
-            const logo = await loadImage('logo - no bg.png');
-            for (let i = 0; i < 5; i++) {
-              const x = Math.random() * 250;
-              const y = Math.random() * 100;
-              const rotation = Math.random() * Math.PI * 2;
-              const scale = 0.2 + Math.random() * 0.3;
-              
-              ctx.save();
-              ctx.translate(x, y);
-              ctx.rotate(rotation);
-              ctx.scale(scale, scale);
-              ctx.drawImage(logo, -logo.width / 2, -logo.height / 2);
-              ctx.restore();
+            try {
+              const logo = await loadImage('logo - no bg.png');
+              for (let i = 0; i < 5; i++) {
+                const x = Math.random() * 250;
+                const y = Math.random() * 100;
+                const rotation = Math.random() * Math.PI * 2;
+                const scale = 0.2 + Math.random() * 0.3;
+                
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.rotate(rotation);
+                ctx.scale(scale, scale);
+                ctx.drawImage(logo, -logo.width / 2, -logo.height / 2);
+                ctx.restore();
+              }
+            } catch (error) {
+              console.error('Error loading logo:', error);
             }
             
             // Draw text
-            ctx.font = '22px ' + randomFont;  // Increased font size by 4 points
+            ctx.font = '22px ' + randomFont;
             ctx.fillStyle = fontcolor;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
@@ -88,9 +93,7 @@ jobs:
               }
               lines.push(currentLine);
 
-              // Calculate total height of text
               const totalHeight = lines.length * lineHeight;
-              // Calculate starting Y position to center text vertically
               let startY = y - (totalHeight / 2) + (lineHeight / 2);
 
               for (let i = 0; i < lines.length; i++) {
@@ -99,7 +102,7 @@ jobs:
               }
             }
             
-            wrapText(ctx, text, 125, 50, 230, 26);  // Centered position and adjusted line height
+            wrapText(ctx, text, 125, 50, 230, 26);
             
             const buffer = canvas.toBuffer('image/jpeg');
             fs.mkdirSync('generated_images', { recursive: true });
@@ -108,6 +111,7 @@ jobs:
             console.log('Selected font: ' + randomFont);
             console.log('Background color: ' + bgcolor);
             console.log('Font color: ' + fontcolor);
+            console.log('Generated image: ' + filename);
           }
           
           generateImage().catch(console.error);
@@ -118,6 +122,6 @@ jobs:
       run: |
         git config --global user.email "action@github.com"
         git config --global user.name "GitHub Action"
-        git add generated_images/*.jpg
-        git commit -m "Generated image with words in filename"
+        git add package.json package-lock.json generated_images/*.jpg
+        git commit -m "Generated image and updated dependencies"
         git push origin main
