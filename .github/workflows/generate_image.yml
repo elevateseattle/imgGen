@@ -5,8 +5,11 @@ on:
       text:
         description: 'Text to convert to image'
         required: true
-      color:
+      bgcolor:
         description: 'Background color of the image'
+        required: true
+      fontcolor:
+        description: 'Color of the font'
         required: true
 jobs:
   build:
@@ -23,31 +26,29 @@ jobs:
     - name: Generate Image
       env:
         INPUT_TEXT: ${{ github.event.inputs.text }}
-        INPUT_COLOR: ${{ github.event.inputs.color }}
+        INPUT_BGCOLOR: ${{ github.event.inputs.bgcolor }}
+        INPUT_FONTCOLOR: ${{ github.event.inputs.fontcolor }}
       run: |
         npm install canvas
         node -e "
           const { createCanvas, registerFont } = require('canvas');
           const fs = require('fs');
           const text = process.env.INPUT_TEXT;
-          const color = process.env.INPUT_COLOR;
+          const bgcolor = process.env.INPUT_BGCOLOR;
+          const fontcolor = process.env.INPUT_FONTCOLOR;
           const filename = text.replace(/,/g, '').replace(/\s+/g, '_').toLowerCase() + '.jpg';
           
-          // List of fonts to choose from (you may need to ensure these fonts are available)
           const fonts = ['Arial', 'Helvetica', 'Times New Roman', 'Courier', 'Verdana', 'Georgia', 'Palatino', 'Garamond', 'Bookman', 'Comic Sans MS', 'Trebuchet MS', 'Arial Black', 'Impact'];
-          
-          // Randomly select a font
           const randomFont = fonts[Math.floor(Math.random() * fonts.length)];
           
           const canvas = createCanvas(250, 100);
           const ctx = canvas.getContext('2d');
           ctx.rect(0, 0, 250, 100);
-          ctx.fillStyle = color;
+          ctx.fillStyle = bgcolor;
           ctx.fill();
           ctx.font = '18px ' + randomFont;
-          ctx.fillStyle = 'ghostwhite';
+          ctx.fillStyle = fontcolor;
           
-          // Function to wrap text
           function wrapText(context, text, x, y, maxWidth, lineHeight) {
             const words = text.split(' ');
             let line = '';
@@ -66,14 +67,15 @@ jobs:
             context.fillText(line, x, y);
           }
           
-          wrapText(ctx, text, 10, 20, 230, 22);  // Adjusted line height for larger font
+          wrapText(ctx, text, 10, 20, 230, 22);
           
           const buffer = canvas.toBuffer('image/jpeg');
           fs.mkdirSync('generated_images', { recursive: true });
           fs.writeFileSync('generated_images/' + filename, buffer);
           
-          // Log the selected font for reference
           console.log('Selected font: ' + randomFont);
+          console.log('Background color: ' + bgcolor);
+          console.log('Font color: ' + fontcolor);
         "
     - name: Commit and push the image
       env:
