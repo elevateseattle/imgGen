@@ -1,0 +1,33 @@
+name: Generate Random Words
+
+on:
+  workflow_dispatch:
+
+jobs:
+  generate-words:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3  # Use the latest version
+
+    - name: Install Node.js
+      uses: actions/setup-node@v3  # Use the latest version
+      with:
+        node-version: '20'  # Use Node.js 20
+
+    - name: Generate Random Words
+      run: |
+        npm init -y
+        npm install random-words
+        node -e "
+          const randomWords = require('random-words');
+          const adjectives = randomWords({ exactly: 1, wordsPerString: 1, separator: ' ', formatter: (word, index) => {
+            return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+          }});
+          const nouns = randomWords({ exactly: 1, wordsPerString: 1, separator: ' ', formatter: (word, index) => {
+            return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+          }});
+          console.log('Random Adjective:', adjectives[0]);
+          console.log('Random Noun:', nouns[0]);
+        "
