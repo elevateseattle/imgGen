@@ -35,22 +35,24 @@ jobs:
       run: |
         echo "Generating random words..."
         node -e "
-          const randomWords = require('random-words');
-          const adjectives = randomWords({ exactly: 1, wordsPerString: 1, formatter: (word, index) => {
-            return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-          }});
-          const nouns = randomWords({ exactly: 1, wordsPerString: 1, formatter: (word, index) => {
-            return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-          }});
-          const text = adjectives[0] + ' ' + nouns[0];
-          const fs = require('fs');
-          try {
-            fs.writeFileSync('random_words.txt', text);
-            console.log('Generated words:', text);
-          } catch (err) {
-            console.error('Failed to write file:', err);
-            process.exit(1);
-          }
+          (async () => {
+            const { default: randomWords } = await import('random-words');
+            const adjectives = randomWords({ exactly: 1, wordsPerString: 1, formatter: (word, index) => {
+              return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+            }});
+            const nouns = randomWords({ exactly: 1, wordsPerString: 1, formatter: (word, index) => {
+              return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+            }});
+            const text = adjectives[0] + ' ' + nouns[0];
+            const fs = require('fs');
+            try {
+              fs.writeFileSync('random_words.txt', text);
+              console.log('Generated words:', text);
+            } catch (err) {
+              console.error('Failed to write file:', err);
+              process.exit(1);
+            }
+          })();
         "
         if [ $? -ne 0 ]; then
           echo "Node script failed"
