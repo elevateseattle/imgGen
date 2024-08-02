@@ -36,7 +36,7 @@ jobs:
         echo "Generating random words..."
         node -e "
           (async () => {
-            const { default: randomWords } = await import('random-words');
+            const randomWords = (await import('random-words')).default;
             const adjectives = randomWords({ exactly: 1, wordsPerString: 1, formatter: (word, index) => {
               return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
             }});
@@ -71,4 +71,3 @@ jobs:
           echo "Git commit or push failed"
           exit 1
         fi
-
