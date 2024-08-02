@@ -11,6 +11,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write  # Ensure the token has write permissions
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
@@ -47,4 +50,4 @@ jobs:
         git config --global user.name "GitHub Action"
         git add output.jpg
         git commit -m "Generated image"
-        git push
+        git push origin main
