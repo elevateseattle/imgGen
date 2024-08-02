@@ -31,7 +31,7 @@ jobs:
       run: |
         npm install canvas
         node -e "
-          const { createCanvas, loadImage } = require('canvas');
+          const { createCanvas, registerFont } = require('canvas');
           const fs = require('fs');
           const text = process.env.INPUT_TEXT;
           const bgcolor = process.env.INPUT_BGCOLOR;
@@ -43,62 +43,39 @@ jobs:
           
           const canvas = createCanvas(250, 100);
           const ctx = canvas.getContext('2d');
+          ctx.rect(0, 0, 250, 100);
+          ctx.fillStyle = bgcolor;
+          ctx.fill();
+          ctx.font = '18px ' + randomFont;
+          ctx.fillStyle = fontcolor;
           
-          async function generateImage() {
-            // Draw background
-            ctx.fillStyle = bgcolor;
-            ctx.fillRect(0, 0, 250, 100);
-            
-            // Load and draw logos
-            const logo = await loadImage('logo - no bg.png');
-            for (let i = 0; i < 5; i++) {
-              const x = Math.random() * 250;
-              const y = Math.random() * 100;
-              const rotation = Math.random() * Math.PI * 2; // Random rotation
-              const scale = 0.2 + Math.random() * 0.3; // Random scale between 0.2 and 0.5
-              
-              ctx.save();
-              ctx.translate(x, y);
-              ctx.rotate(rotation);
-              ctx.scale(scale, scale);
-              ctx.drawImage(logo, -logo.width / 2, -logo.height / 2);
-              ctx.restore();
-            }
-            
-            // Draw text
-            ctx.font = '18px ' + randomFont;
-            ctx.fillStyle = fontcolor;
-            
-            function wrapText(context, text, x, y, maxWidth, lineHeight) {
-              const words = text.split(' ');
-              let line = '';
-              for (let n = 0; n < words.length; n++) {
-                const testLine = line + words[n] + ' ';
-                const metrics = context.measureText(testLine);
-                const testWidth = metrics.width;
-                if (testWidth > maxWidth && n > 0) {
-                  context.fillText(line, x, y);
-                  line = words[n] + ' ';
-                  y += lineHeight;
-                } else {
-                  line = testLine;
-                }
+          function wrapText(context, text, x, y, maxWidth, lineHeight) {
+            const words = text.split(' ');
+            let line = '';
+            for (let n = 0; n < words.length; n++) {
+              const testLine = line + words[n] + ' ';
+              const metrics = context.measureText(testLine);
+              const testWidth = metrics.width;
+              if (testWidth > maxWidth && n > 0) {
+                context.fillText(line, x, y);
+                line = words[n] + ' ';
+                y += lineHeight;
+              } else {
+                line = testLine;
               }
-              context.fillText(line, x, y);
             }
-            
-            wrapText(ctx, text, 10, 20, 230, 22);
-            
-            const buffer = canvas.toBuffer('image/jpeg');
-            fs.mkdirSync('generated_images', { recursive: true });
-            fs.writeFileSync('generated_images/' + filename, buffer);
-            
-            console.log('Selected font: ' + randomFont);
-            console.log('Background color: ' + bgcolor);
-            console.log('Font color: ' + fontcolor);
+            context.fillText(line, x, y);
           }
           
-          generateImage().catch(console.error);
+          wrapText(ctx, text, 10, 20, 230, 22);
+          
+          const buffer = canvas.toBuffer('image/jpeg');
+          fs.mkdirSync('generated_images', { recursive: true });
+          fs.writeFileSync('generated_images/' + filename, buffer);
+          
+          console.log('Selected font: ' + randomFont);
+          console.log('Background color: ' + bgcolor);
+          console.log('Font color: ' + fontcolor);
         "
     - name: Commit and push the image
       env:
