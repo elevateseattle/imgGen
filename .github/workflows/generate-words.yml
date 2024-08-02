@@ -44,8 +44,13 @@ jobs:
           }});
           const text = adjectives[0] + ' ' + nouns[0];
           const fs = require('fs');
-          fs.writeFileSync('random_words.txt', text);
-          console.log('Generated words:', text);
+          try {
+            fs.writeFileSync('random_words.txt', text);
+            console.log('Generated words:', text);
+          } catch (err) {
+            console.error('Failed to write file:', err);
+            process.exit(1);
+          }
         "
         if [ $? -ne 0 ]; then
           echo "Node script failed"
