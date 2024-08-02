@@ -35,6 +35,7 @@ jobs:
         node -e "
           const { createCanvas } = require('canvas');
           const fs = require('fs');
+          const crypto = require('crypto');
           const canvas = createCanvas(250, 100);
           const ctx = canvas.getContext('2d');
           const text = process.env.INPUT_TEXT;
@@ -46,7 +47,10 @@ jobs:
           ctx.fillStyle = 'ghostwhite';
           ctx.fillText(text, 50, 60);
           const buffer = canvas.toBuffer('image/jpeg');
-          fs.writeFileSync('output.jpg', buffer);
+          const randomString = crypto.randomBytes(5).toString('hex');
+          const filename = \`output-\${randomString}.jpg\`;
+          fs.writeFileSync(filename, buffer);
+          console.log(\`Generated image: \${filename}\`);
         "
 
     - name: Commit and push the image
@@ -55,6 +59,6 @@ jobs:
       run: |
         git config --global user.email "action@github.com"
         git config --global user.name "GitHub Action"
-        git add output.jpg
+        git add output-*.jpg
         git commit -m "Generated image"
         git push origin main
