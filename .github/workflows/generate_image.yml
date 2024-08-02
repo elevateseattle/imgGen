@@ -35,19 +35,11 @@ jobs:
         node -e "
           const { createCanvas } = require('canvas');
           const fs = require('fs');
-          const crypto = require('crypto');
-          const path = require('path');
-          const canvas = createCanvas(250, 100);
-          const ctx = canvas.getContext('2d');
           const text = process.env.INPUT_TEXT;
           const color = process.env.INPUT_COLOR;
-          const outputDir = 'generated_images';
-          
-          // Create directory if it doesn't exist
-          if (!fs.existsSync(outputDir)) {
-            fs.mkdirSync(outputDir);
-          }
-          
+          const filename = text.replace(/\s+/g, '_').toLowerCase() + '.jpg';
+          const canvas = createCanvas(250, 100);
+          const ctx = canvas.getContext('2d');
           ctx.rect(0, 0, 250, 100);
           ctx.fillStyle = color;
           ctx.fill();
@@ -55,27 +47,15 @@ jobs:
           ctx.fillStyle = 'ghostwhite';
           ctx.fillText(text, 50, 60);
           const buffer = canvas.toBuffer('image/jpeg');
-          const randomString = crypto.randomBytes(5).toString('hex');
-          const filename = path.join(outputDir, \`output-\${randomString}.jpg\`);
-          fs.writeFileSync(filename, buffer);
-          console.log(\`Generated image: \${filename}\`);
-          
-          // Write the filename to a file
-          fs.writeFileSync('generated_image_filename.txt', filename);
+          fs.writeFileSync('generated_images/' + filename, buffer);
         "
 
-    - name: Upload artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: generated-image-filename
-        path: generated_image_filename.txt
-
-    - name: Commit and push the images
+    - name: Commit and push the image
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         git config --global user.email "action@github.com"
         git config --global user.name "GitHub Action"
         git add generated_images/*.jpg
-        git commit -m "Generated image"
+        git commit -m "Generated image with words in filename"
         git push origin main
