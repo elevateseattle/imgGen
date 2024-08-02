@@ -37,7 +37,7 @@ jobs:
           const fs = require('fs');
           const text = process.env.INPUT_TEXT;
           const color = process.env.INPUT_COLOR;
-          const filename = text.replace(/\s+/g, '_').toLowerCase() + '.jpg';
+          const filename = text.replace(/,/g, '').replace(/\s+/g, '_').toLowerCase() + '.jpg';
           const canvas = createCanvas(250, 100);
           const ctx = canvas.getContext('2d');
           ctx.rect(0, 0, 250, 100);
@@ -47,6 +47,7 @@ jobs:
           ctx.fillStyle = 'ghostwhite';
           ctx.fillText(text, 50, 60);
           const buffer = canvas.toBuffer('image/jpeg');
+          fs.mkdirSync('generated_images', { recursive: true });
           fs.writeFileSync('generated_images/' + filename, buffer);
         "
 
