@@ -1,0 +1,48 @@
+name: Generate Image
+
+on:
+  workflow_dispatch:
+    inputs:
+      text:
+        description: 'Text to convert to image'
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Install Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    - name: Generate Image
+      run: |
+        npm install canvas
+        node -e "
+          const { createCanvas } = require('canvas');
+          const fs = require('fs');
+          const canvas = createCanvas(250, 100);
+          const ctx = canvas.getContext('2d');
+          const text = process.env.INPUT_TEXT;
+          ctx.rect(0, 0, 250, 100);
+          ctx.fillStyle = 'green';
+          ctx.fill();
+          ctx.font = '30px Helvetica';
+          ctx.fillStyle = 'ghostwhite';
+          ctx.fillText(text, 50, 60);
+          const buffer = canvas.toBuffer('image/jpeg');
+          fs.writeFileSync('output.jpg', buffer);
+        "
+
+    - name: Commit and push the image
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add output.jpg
+        git commit -m "Generated image"
+        git push
