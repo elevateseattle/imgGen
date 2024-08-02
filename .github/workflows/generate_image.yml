@@ -59,6 +59,9 @@ jobs:
           const filename = path.join(outputDir, \`output-\${randomString}.jpg\`);
           fs.writeFileSync(filename, buffer);
           console.log(\`Generated image: \${filename}\`);
+          
+          // Write the filename to a file
+          fs.writeFileSync('latest_image.txt', filename);
         "
 
     - name: Commit and push the images
@@ -67,6 +70,6 @@ jobs:
       run: |
         git config --global user.email "action@github.com"
         git config --global user.name "GitHub Action"
-        git add generated_images/*.jpg
+        git add generated_images/*.jpg latest_image.txt
         git commit -m "Generated image"
         git push origin main
