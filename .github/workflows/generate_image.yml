@@ -6,6 +6,9 @@ on:
       text:
         description: 'Text to convert to image'
         required: true
+      color:
+        description: 'Background color of the image'
+        required: true
 
 jobs:
   build:
@@ -26,6 +29,7 @@ jobs:
     - name: Generate Image
       env:
         INPUT_TEXT: ${{ github.event.inputs.text }}  # Set the text input as an environment variable
+        INPUT_COLOR: ${{ github.event.inputs.color }}  # Set the color input as an environment variable
       run: |
         npm install canvas
         node -e "
@@ -34,8 +38,9 @@ jobs:
           const canvas = createCanvas(250, 100);
           const ctx = canvas.getContext('2d');
           const text = process.env.INPUT_TEXT;
+          const color = process.env.INPUT_COLOR;
           ctx.rect(0, 0, 250, 100);
-          ctx.fillStyle = 'green';
+          ctx.fillStyle = color;
           ctx.fill();
           ctx.font = '30px Helvetica';
           ctx.fillStyle = 'ghostwhite';
