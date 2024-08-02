@@ -9,19 +9,30 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3  # Use the latest version
+      uses: actions/checkout@v3
 
     - name: Install Node.js
-      uses: actions/setup-node@v3  # Use the latest version
+      uses: actions/setup-node@v3
       with:
-        node-version: '20'  # Use Node.js 20
+        node-version: '20'
 
-    - name: Generate Random Words
+    - name: Initialize npm and Install Dependencies
       run: |
         echo "Initializing npm project..."
         npm init -y
+        if [ $? -ne 0 ]; then
+          echo "npm init failed"
+          exit 1
+        fi
         echo "Installing random-words package..."
         npm install random-words
+        if [ $? -ne 0 ]; then
+          echo "npm install failed"
+          exit 1
+        fi
+
+    - name: Generate Random Words
+      run: |
         echo "Generating random words..."
         node -e "
           const randomWords = require('random-words');
@@ -36,11 +47,20 @@ jobs:
           fs.writeFileSync('random_words.txt', text);
           console.log('Generated words:', text);
         "
+        if [ $? -ne 0 ]; then
+          echo "Node script failed"
+          exit 1
+        fi
 
     - name: Commit Random Words
       run: |
+        echo "Committing generated words to the repository..."
         git config --global user.email "action@github.com"
         git config --global user.name "GitHub Action"
         git add random_words.txt
         git commit -m "Generated random words"
         git push origin main
+        if [ $? -ne 0 ]; then
+          echo "Git commit or push failed"
+          exit 1
+        fi
