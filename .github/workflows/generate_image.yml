@@ -61,8 +61,14 @@ jobs:
           console.log(\`Generated image: \${filename}\`);
           
           // Write the filename to a file
-          fs.writeFileSync('latest_image.txt', filename);
+          fs.writeFileSync('generated_image_filename.txt', filename);
         "
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: generated-image-filename
+        path: generated_image_filename.txt
 
     - name: Commit and push the images
       env:
@@ -70,6 +76,6 @@ jobs:
       run: |
         git config --global user.email "action@github.com"
         git config --global user.name "GitHub Action"
-        git add generated_images/*.jpg latest_image.txt
+        git add generated_images/*.jpg
         git commit -m "Generated image"
         git push origin main
